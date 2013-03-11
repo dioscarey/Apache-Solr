@@ -1,4 +1,4 @@
-Apache-Solr
+Apache Solr test
 ===========
 
 Apache Solr Lucene
