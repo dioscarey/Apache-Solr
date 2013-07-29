@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Apache SOlr</title>
+
+<style type="text/css">
+</style>
+</head>
+<body>
+<h2>Probando solr</h2>
+<br>
+
+<form id="formAdd">
+	<h3>Indexar Información</h3>
+	<label>Número de registro:</label><br>
+	<input type="text" id="num_register_user" name="num_register_user"><br>
+	<label>ID: </label><br>
+	<input type="text" id="id_bus" name="id_bus"><br>
+	<label>Numero de negocio:</label><br>
+	<input type="text" id="num_bus" name="num_bus"><br>
+	<label>Nombre del negocio:</label><br>
+	<input type="text" id="name_bus" name="name_bus"><br>
+	<label>Imagen principal del negocio:</label><br>
+	<input type="text" id="mainpic_bus" name="mainpic_bus"><br>
+	<label>Slogan del negocio:</label><br>
+	<input type="text" id="slogan_bus" name="slogan_bus"><br>
+	<button id="insertar">Insertar</button><br>
+</form>
+<hr>
+<form>
+	<h3>Eliminar</h3>
+	<label>Elminiar por ID</label><br>
+	<input type="text" id="inputDelete" name="inputDelete"><br>
+	<button id="eliminar">Eliminar</button><br>
+</form>
+<hr>
+<form>
+	<h3>Buscar</h3>
+	<label>Buscar</label>
+	<input type="text" id="inputSearch" name="inputSearch"><br>
+	<button id="buscar">Buscar</button><br>
+</form>
+<ul id="resultado"></ul>
+
+<script type="text/javascript" src="../js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+
+$("#buscar").click(function(e){
+	e.preventDefault();
+	$.getJSON("solrQuery.php",{request:"search",q:$("#inputSearch").val()},function(json){
+		//$("#resultado").empty();
+		console.log(json);
+			$("#resultado").html('');
+			var num = 0;
+		$.each(json.highlighting,function(i,val){
+			var num_register_user = json.response.docs[num].num_register_user;
+			var name_bus = (val.name_bus) ?  val.name_bus : json.response.docs[num].name_bus
+			var slogan_bus = (val.slogan_bus) ?  val.slogan_bus : json.response.docs[num].slogan_bus
+			$("#resultado").append('<li>'+num_register_user+' - '+name_bus+' - '+slogan_bus+'</li>');	
+			num++;
+		});
+
+	});
+});
+$("#insertar").click(function(e){
+	e.preventDefault();
+	var addForm = $("#formAdd").serialize();
+	console.log(addForm);
+	$.getJSON("solrQuery.php?"+addForm,{request:"insert"},function(json){
+		//$("#resultado").empty();
+		console.log(json);
+	});
+});
+$("#eliminar").click(function(e){
+	e.preventDefault();
+	$.getJSON("solrQuery.php",{request:"delete",d:$("#inputDelete").val()},function(json){
+		//$("#resultado").empty();
+			$("#resultado").html(json);
+
+	});
+});
+</script>
+
+
+</body>
+</html>
